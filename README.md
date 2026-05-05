@@ -20,11 +20,11 @@ Os dados são exibidos em um dashboard com estética hacker, com foco em educaç
       
       📊 Dashboard
 <p align="center">
-  <img src="Imagens/Dashboard.png" width="300">
+  <im src="Imagens/Dashboard.png" width="300">
 </p>
 
 <p align="center">
-  <img src="Imagens/Dashboard2.png" width="300">
+  <im src="Imagens/Dashboard2.png" width="300">
 </p>
 
 ---
