@@ -5,215 +5,301 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Demonstração de Fingerprinting e Privacidade na Web</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <style>
-body {
-    margin: 0;
-    font-family: monospace;
-    background: #05070d;
-    color: #d1ffe8;
+:root {
+    --bg: #0a0c10;
+    --card-bg: rgba(255, 255, 255, 0.04);
+    --accent: #00ffaa;
+    --text-primary: #e2e8f0;
+    --text-secondary: #94a3b8;
+    --border: rgba(0, 255, 170, 0.15);
 }
 
-/* Fundo preto */
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    overflow-x: hidden;
+}
+
+/* Fundo com efeito de profundidade */
 body::before {
     content: "";
     position: fixed;
     inset: 0;
-    background: #000;
-    z-index: -1;
-}
-    
-  /* Fundo com glow */  
-body.glow::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background: radial-gradient(circle at bottom, #0b3d1a, transparent 90%);
+    background: radial-gradient(circle at bottom right, #0b3d1a44, transparent 60%),
+                radial-gradient(circle at top left, #05070d, #000);
     z-index: -1;
 }
 
-@keyframes glowMove {
-    0% { transform: scale(1); opacity: 0.6; }
-    100% { transform: scale(1.2); opacity: 1; }
+/* Tela de aviso inicial */
+#intro {
+    display: flex;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
 }
 
-/* Texto de carregamento */
+.box {
+    max-width: 600px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    padding: 40px;
+    border-radius: 24px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+.box h2 {
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.box p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+button {
+    margin-top: 25px;
+    padding: 14px 30px;
+    border: none;
+    background: var(--accent);
+    color: #000;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 255, 170, 0.3);
+}
+
+/* Terminal de carregamento */
 #terminal {
-    padding: 25px;
-    font-family: "Courier New", monospace;
-    font-size: 18px;
-    color: #00ff00;
-    text-shadow: 0 0 6px rgba(0,255,180,0.25);
-    white-space: pre-line;
+    padding: 50px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.1rem;
+    color: var(--accent);
+    line-height: 1.8;
+    display: none;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 /* Dashboard */
 #dashboard {
     display: none;
-    padding: 25px;
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 h1 {
     text-align: center;
-    color: #00ffcc;
-    margin-bottom: 25px;
+    font-weight: 300;
+    letter-spacing: -1px;
+    margin-bottom: 40px;
 }
 
-/* Texto de aviso */
 #textoinfo {
     display: none;
-    margin: 10px auto 20px;
-    max-width: 700px;
-    padding: 12px 16px;
-    border-radius: 10px;
-    background: rgba(0, 255, 170, 0.05);
-    border: 1px solid rgba(0, 255, 170, 0.15);
-    color: Red;
-    font-size: 13px;
+    margin: 0 auto 30px;
+    max-width: 800px;
+    padding: 15px;
+    border-radius: 12px;
+    background: rgba(255, 50, 50, 0.1);
+    border: 1px solid rgba(255, 50, 50, 0.2);
+    color: #ff6b6b;
+    font-size: 0.9rem;
     text-align: center;
-    white-space: pre-line;
 }
 
-/* GRID */
+/* Mapa */
+#map {
+    height: 300px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* Grid de Dados */
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 14px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
 }
 
 .card {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(0,255,170,0.12);
-    border-radius: 10px;
-    padding: 14px 16px;
-    box-shadow: 0 0 10px rgba(0,255,170,0.05);
-    backdrop-filter: blur(8px);
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    transition: 0.3s ease;
+}
 
-    }
-
-/* hover sutil pra borda brilhante */
 .card:hover {
-    border-color: rgba(0,255,170,0.35);
-    box-shadow: 0 0 14px rgba(0,255,170,0.12);
+    background: rgba(255, 255, 255, 0.07);
+    border-color: var(--accent);
 }
 
-/* LABELS Texto dos tipos de dados */
 .label {
-    font-size: 12px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
     letter-spacing: 1px;
-    color: #00ffaa;
-    opacity: 0.8;
+    color: var(--accent);
+    margin-bottom: 8px;
+    font-weight: 600;
 }
 
-/* Valores dos dados obtidos */
 .value {
-    margin-top: 6px;
-    font-size: 14px;
-    color: #eafff6;
-    word-break: break-word;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.95rem;
+    color: #fff;
+    word-break: break-all;
 }
 
-/* LOADING dos dados */
+#protecao {
+    grid-column: 1 / -1;
+    background: rgba(0, 255, 170, 0.05);
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    margin-top: 20px;
+}
+
+    /*Informacoes paraproteção*/
+#protecao h2 { margin-top: 0; }
+#protecao ul { padding-left: 20px; color: var(--text-secondary); }
+#protecao li { margin-bottom: 8px; }
+
+/* Animação Loading */
 .loading {
-    opacity: 0.5;
+    opacity: 0.4;
     animation: pulse 1.5s infinite;
 }
 
 @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.8; }
 }
+    
 </style>
+    
 </head>
 <body>
-
+ 
+<div id="intro">
+    <div class="box">
+        <h2>Privacidade & Rastreamento</h2>
+        <p>Esta demonstração revela as informações técnicas que o seu navegador "vaza" para qualquer site, permitindo a criação de uma assinatura única sua (Fingerprint).</p>
+        <button onclick="iniciarDemo()">Analisar meu navegador</button>
+    </div>
+</div>
+    
 <div id="terminal"></div>
 
 <div id="dashboard">
-    <h1>Simulador de coleta de dados web</h1>
+    <h1>Análise de Fingerprinting</h1>
 
-    <!--Texto de aviso!-->
-    <div id="textoinfo">Nenhum dado é armazenado.
-        
-As informações abaixo são obtidas diretamente do seu dispositivo e podem ser acessadas por diversos sites durante a navegação.
-Este painel tem apenas finalidade demonstrativa, para mostrar quais tipos de dados um site pode coletar automaticamente.
+    <div id="textoinfo">
+        ⚠️ Atenção: Estes dados são acessíveis sem qualquer pedido de permissão. 
+        Eles podem ser usados para identificar você de forma persistente.
     </div>
 
-    <!--Labels dos texto de tipo de dados!-->
+    <div id="map"></div>
+
     <div class="grid">
+        <div class="card"><div class="label">Endereço IP</div><div id="ip" class="value loading">Carregando...</div></div>
+        <div class="card"><div class="label">Localização</div><div id="location" class="value loading">Carregando...</div></div>
+        <div class="card"><div class="label">Provedor</div><div id="org" class="value loading">Carregando...</div></div>
+        <div class="card"><div class="label">Sistema</div><div id="device" class="value loading">Carregando...</div></div>
+        <div class="card"><div class="label">Navegador</div><div id="browser" class="value loading">Carregando...</div></div>
+        <div class="card"><div class="label">Idioma</div><div id="lang" class="value loading">Carregando...</div></div>
+        <div class="card"><div class="label">Resolução da Tela</div><div id="screen" class="value loading">Carregando...</div></div>
+        <div class="card"><div class="label">Fuso horário</div><div id="timezone" class="value loading">Carregando...</div></div>
+        <div class="card"><div class="label">CPU (threads)</div><div id="cpu" class="value loading">Carregando...</div></div>
+        <div class="card"><div class="label">Memória</div><div id="memory" class="value loading">Carregando...</div></div>
+        <div class="card"><div class="label">Canvas Fingerprint</div><div id="canvas" class="value loading">Carregando...</div></div>
+        <div class="card"><div class="label">WebGL</div><div id="webgl" class="value loading">Carregando...</div></div>
+        <div class="card"><div class="label">Audio Fingerprint</div><div id="audio" class="value loading">Carregando...</div></div>
+        <div class="card"><div class="label">Extras</div><div id="extra" class="value loading">Carregando...</div></div>
 
-        <div class="card"><div class="label">Endereço IP</div><div id="ip" class="value loading">loading...</div></div>
-        <div class="card"><div class="label">Localização</div><div id="location" class="value loading">loading...</div></div>
-        <div class="card"><div class="label">Provedor de internet</div><div id="org" class="value loading">loading...</div></div>
-        <div class="card"><div class="label">Sistema</div><div id="device" class="value loading">loading...</div></div>
-        <div class="card"><div class="label">Navegador</div><div id="browser" class="value loading">loading...</div></div>
-        <div class="card"><div class="label">Idioma</div><div id="lang" class="value loading">loading...</div></div>
-
-        <div class="card"><div class="label">Resolução da Tela</div><div id="screen" class="value loading">loading...</div></div>
-        <div class="card"><div class="label">Fuso horário</div><div id="timezone" class="value loading">loading...</div></div>
-        <div class="card"><div class="label">CPU (threads)</div><div id="cpu" class="value loading">loading...</div></div>
-        <div class="card"><div class="label">Memória aproximada</div><div id="memory" class="value loading">loading...</div></div>
-        <div class="card"><div class="label">Canvas Fingerprint</div><div id="canvas" class="value loading">loading...</div></div>
-
-        <div class="card"><div class="label">WebGL</div><div id="webgl" class="value loading">loading...</div></div>
-        <div class="card"><div class="label">Audio Fingerprint</div><div id="audio" class="value loading">loading...</div></div>
-        <div class="card"><div class="label">Extras</div><div id="extra" class="value loading">loading...</div></div>
-
+        <div id="protecao">            
+            <h2>Como reduzir seu rastro</h2>
+            <ul>
+                <li>Use navegadores focados em privacidade (Brave, Firefox, Mullvad).</li>
+                <li>Bloqueie cookies de terceiros e scripts de rastreio.</li>
+                <li>Utilize uma VPN confiável para mascarar seu IP real.</li>
+                <li>Desative a permissão de localização automática.</li>
+                <li>Considere extensões como uBlock Origin ou Privacy Badger.</li>
+            </ul>
+        </div>
     </div>
 </div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>    
 const terminal = document.getElementById("terminal");
 const textoinfo = document.getElementById("textoinfo");
  
-    /* Tela de carregamento */
 const mensagens = [
-    "Inicializando sistema...",
-    "Carregando módulos...",
-    "Estabelecendo conexão...",
-    "Coletando informações do navegador...",
-    "Processando dados...",
-    "Finalizando..."
+    "> Inicializando módulos de análise...",
+    "> Interrogando APIs do hardware...",
+    "> Mapeando nós de rede...",
+    "> Gerando assinatura de renderização...",
+    "> Finalizando diagnóstico..."
 ];
 
 function digitar(texto, callback) {
     let i = 0;
-
     function escrever() {
         if (i < texto.length) {
             terminal.innerHTML += texto.charAt(i);
             i++;
-            setTimeout(escrever, 30);
+            setTimeout(escrever, 15);
         } else {
             terminal.innerHTML += "\n";
-            if (callback) setTimeout(callback, 400);
+            if (callback) setTimeout(callback, 80);
         }
     }
     escrever();
 }
-
+    
+function iniciarDemo() {
+    document.getElementById("intro").style.display = "none";
+    terminal.style.display = "block";
+    iniciar();
+}
+    
 function iniciar(index = 0) {
     if (index < mensagens.length) {
         digitar(mensagens[index], () => iniciar(index + 1));
     } else {
-        setTimeout(mostrarDashboard, 800);
+        mostrarDashboard();
     }
 }
 
-    /* Dashboard das informaçoes */
 function mostrarDashboard() {
     terminal.style.display = "none";
     document.getElementById("dashboard").style.display = "block";
-
     textoinfo.style.display = "block";
-    document.body.classList.add("glow"); /* Fundo verde */
 
-    fetch('https://ipinfo.io/json') /* Api ipinfo.io para mostrar os dados */
+    fetch('https://ipinfo.io/json')
     .then(res => res.json())
     .then(data => {
-        
-        /* dados da api ipinfo */
         document.getElementById("ip").textContent = data.ip;
         document.getElementById("location").textContent = `${data.city}, ${data.region}, ${data.country}`;
         document.getElementById("org").textContent = data.org;
@@ -222,47 +308,56 @@ function mostrarDashboard() {
         document.getElementById("browser").textContent = navigator.userAgent;
         document.getElementById("lang").textContent = navigator.language;
         
-        /* Dados do Fingerprint */
+        const [lat, lon] = data.loc.split(",");
+               
+        //mapa
+        const map = L.map('map').setView([lat, lon], 5);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+        
+        //Marcador visual
+        L.circleMarker([lat, lon], {
+            radius: 10,
+            color: "#00ffaa",
+            fillColor: "#00ffaa",
+            fillOpacity: 0.5
+        }).addTo(map);
+
+        setTimeout(() => {
+            map.invalidateSize(); // Faz o mapa ocupar o espaço todo
+            map.flyTo([lat, lon], 12, {
+                animate: true,
+                duration: 2 // Tempo da animação
+            });
+        }, 300); 
+
+
+        // Garante que o Leaflet carregue as partes do mapa corretamente após o display block
+        setTimeout(() => { map.invalidateSize(); }, 100);
+
         const fp = getFingerprint();
-
-        document.getElementById("screen").textContent =
-            `${screen.width}x${screen.height}`;
-
+        document.getElementById("screen").textContent = `${screen.width}x${screen.height}`;
         document.getElementById("timezone").textContent = fp.timezone;
         document.getElementById("cpu").textContent = fp.hardwareConcurrency;
-        document.getElementById("memory").textContent = fp.memory;
-
+        document.getElementById("memory").textContent = fp.memory + " GB";
         document.getElementById("canvas").textContent = canvasFingerprint();
 
         const webgl = webglFingerprint();
         const extra = extraFingerprint();
+        document.getElementById("webgl").textContent = `${webgl.vendor} | ${webgl.renderer}`;
+        document.getElementById("extra").textContent = JSON.stringify(extra);
 
-        document.getElementById("webgl").textContent =
-            `${webgl.vendor} | ${webgl.renderer}`;
-
-        document.getElementById("extra").textContent =
-            JSON.stringify(extra, null, 2);
-
-        audioFingerprint()
-        .then(audio => {
+        audioFingerprint().then(audio => {
             document.getElementById("audio").textContent = audio;
-
-            document.querySelectorAll(".value").forEach(e =>
-                e.classList.remove("loading")
-            );
+            document.querySelectorAll(".value").forEach(e => e.classList.remove("loading"));
         });
     });
 }
 
-/* =======================
-   Funçoes do Fingerprint
-======================= */
-
+/*Fingerprint */
 function getFingerprint() {
     return {
-        userAgent: navigator.userAgent,
-        language: navigator.language,
-        platform: navigator.platform,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         hardwareConcurrency: navigator.hardwareConcurrency,
         memory: navigator.deviceMemory || "desconhecido"
@@ -272,10 +367,8 @@ function getFingerprint() {
 function canvasFingerprint() {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
-
     ctx.font = "14px Arial";
     ctx.fillText("fingerprint", 2, 2);
-
     return canvas.toDataURL().slice(0, 30);
 }
 
@@ -283,25 +376,19 @@ function webglFingerprint() {
     try {
         const canvas = document.createElement("canvas");
         const gl = canvas.getContext("webgl");
-
         if (!gl) return { vendor: "n/a", renderer: "n/a" };
-
         const debug = gl.getExtension("WEBGL_debug_renderer_info");
-
         return {
             vendor: debug ? gl.getParameter(debug.UNMASKED_VENDOR_WEBGL) : "unknown",
             renderer: debug ? gl.getParameter(debug.UNMASKED_RENDERER_WEBGL) : "unknown"
         };
-    } catch {
-        return { vendor: "erro", renderer: "erro" };
-    }
+    } catch { return { vendor: "erro", renderer: "erro" }; }
 }
 
 function extraFingerprint() {
     return {
-        devicePixelRatio: window.devicePixelRatio,
-        maxTouchPoints: navigator.maxTouchPoints,
-        plugins: navigator.plugins.length,
+        dpr: window.devicePixelRatio,
+        touch: navigator.maxTouchPoints,
         webdriver: navigator.webdriver
     };
 }
@@ -309,30 +396,21 @@ function extraFingerprint() {
 async function audioFingerprint() {
     try {
         const AudioContext = window.OfflineAudioContext || window.webkitOfflineAudioContext;
-
         const ctx = new AudioContext(1, 44100, 44100);
         const osc = ctx.createOscillator();
         const comp = ctx.createDynamicsCompressor();
-
         osc.connect(comp);
         comp.connect(ctx.destination);
-
         osc.start(0);
         ctx.startRendering();
-
         return await new Promise(resolve => {
             ctx.oncomplete = e => {
                 const data = e.renderedBuffer.getChannelData(0);
                 resolve(data.slice(0, 50).reduce((a, b) => a + Math.abs(b), 0).toFixed(2));
             };
         });
-    } catch {
-        return "não suportado";
-    }
+    } catch { return "não suportado"; }
 }
-
-setTimeout(() => iniciar(), 500);
 </script>
-
 </body>
 </html>
