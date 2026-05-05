@@ -31,8 +31,7 @@ body::before {
     content: "";
     position: fixed;
     inset: 0;
-    background: radial-gradient(circle at bottom right, #0b3d1a44, transparent 60%),
-                radial-gradient(circle at top left, #05070d, #000);
+    background: radial-gradient(circle at bottom right, #0b3d1a44, transparent 60%),radial-gradient(circle at top left, #05070d, #000);
     z-index: -1;
 }
 
@@ -179,7 +178,7 @@ h1 {
     margin-top: 20px;
 }
 
-    /*Informacoes paraproteção*/
+    /*Informações para proteção*/
 #protecao h2 { margin-top: 0; }
 #protecao ul { padding-left: 20px; color: var(--text-secondary); }
 #protecao li { margin-bottom: 8px; }
